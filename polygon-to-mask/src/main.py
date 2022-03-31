@@ -23,16 +23,16 @@ def process(path):
             meta = json.load(f)
         image_info = meta['image_info']
         dataset, data_key = meta['dataset'], meta['data_key']
-        if 'width' not in image_info:
-            print(f'[WARNING, {dataset}/{data_key}] skipped: Image info does not exist, please submit through our annotation app')
-            continue
+        # if 'width' not in image_info:
+        #     print(f'[WARNING, {dataset}/{data_key}] skipped: Image info does not exist, please submit through our annotation app')
+        #     continue
         label_id = meta['label_id']
-        label_path = os.path.join(path, 'labels', f'{label_id}.json')        
+        label_path = os.path.join(path, 'labels', f'{label_id}.json')
         with open(label_path, 'r', encoding='utf-8') as f:
             label = json.load(f)
 
         mask_dir = os.path.join(path, 'masks')
-        create_mask(data_type, project_info, image_info, label_id, label, mask_dir)
+        create_mask(data_type, project_info, image_info, label_id, label, mask_dir, data_key)
 
 
 if __name__ == '__main__':
