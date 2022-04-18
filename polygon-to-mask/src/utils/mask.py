@@ -26,7 +26,13 @@ def create_mask(data_type, project_info, image_info, label_id, label, mask_dir, 
     def anno_to_polygons(idx, anno):
         if len(anno['coord']['points'][0][0]) < 3:
             return None, None
-        points = [(point['x'], point['y']) for point in anno['coord']['points'][0][0]]
+        points = list()
+        for i in range(len(anno['coord']['points'])):
+            # print("1")
+            # print(type([(point['x'], point['y']) for point in anno['coord']['points'][i][0]]))
+            points.append([(point['x'], point['y']) for point in anno['coord']['points'][i][0]])
+            # print(points)
+        # points = [(point['x'], point['y']) for point in anno['coord']['points'][0][0]]
         z_index = anno['meta']['zIndex'] if 'meta' in anno and 'zIndex' in anno['meta'] else 1
         group = class_infos[obj['class_id']]['group']
         group_name = group['name'] if group is not None else None
@@ -43,6 +49,7 @@ def create_mask(data_type, project_info, image_info, label_id, label, mask_dir, 
             continue
         if data_type == 'image':
             group_name, polygons = anno_to_polygons(idx, obj['annotation'])
+            # print(polygons)
             if polygons is not None:
                 group_polygons[group_name].append(polygons)
         else:
@@ -76,7 +83,8 @@ def create_mask(data_type, project_info, image_info, label_id, label, mask_dir, 
             mask_draw = ImageDraw.Draw(mask_image)
 
             for polygon in sorted(polygons, key=lambda p: p['zIndex']):
-                mask_draw.polygon(polygon['points'], fill=polygon[key])
+                for i in range(len(polygon['points'])):
+                    mask_draw.polygon(polygon['points'][i], fill=polygon[key])
 
             mask_image = mask_image.convert('RGB')
             mask_image.save(mask_path, format='PNG')
